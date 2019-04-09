@@ -1,5 +1,7 @@
 'use strict';
 
+import chatbot from '../controllers/chatbotController';
+
 export default (app) => {
 	app.get('/api/get_client_token', async (req, res) => {
 		let token = await chatbot.getToken();
