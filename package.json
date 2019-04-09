@@ -4,7 +4,9 @@
 	"description": "",
 	"main": "index.js",
 	"dependencies": {
+		"dialogflow": "^0.8.2",
 		"express": "^4.16.4",
+		"google-oauth-jwt": "^0.2.0",
 		"js-yaml": "^3.13.1"
 	},
 	"devDependencies": {

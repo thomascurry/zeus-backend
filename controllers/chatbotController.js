@@ -1,14 +1,14 @@
 'use strict';
 import dialogflow from 'dialogflow';
-import structJson from './structjson';
-const config = require('../config/keys');
+import structJson from '../utils/structjson';
+import config from '../config/config';
 
 import googleAuth from 'google-oauth-jwt';
 
-const projectID = config.googleProjectID;
+const projectID = config.passengers.googleProjectID;
 const credentials = {
-	client_email: config.googleClientEmail,
-	private_key: config.googlePrivateKey.replace(/\\n/g, '\n') //TODO: Figure out why this is needed for Heroku
+	client_email: config.passengers.googleClientEmail,
+	private_key: config.passengers.googlePrivateKey.replace(/\\n/g, '\n') //TODO: Figure out why this is needed for Heroku
 };
 
 const sessionClient = new dialogflow.SessionsClient({ projectID, credentials });
@@ -18,8 +18,8 @@ module.exports = {
 		return new Promise((resolve) => {
 			googleAuth.authenticate(
 				{
-					email: config.googleClientEmail,
-					key: config.googlePrivateKey,
+					email: config.passengers.googleClientEmail,
+					key: config.passengers.googlePrivateKey,
 					scopes: [ 'https://www.googleapis.com/auth/cloud-platform' ]
 				},
 				(err, token) => {
@@ -29,14 +29,17 @@ module.exports = {
 		});
 	},
 	textQuery: async function(text, userID, parameters = {}) {
-		let sessionPath = sessionClient.sessionPath(config.googleProjectID, config.dialogFlowSessionID + userID);
+		let sessionPath = sessionClient.sessionPath(
+			config.passengers.googleProjectID,
+			config.passengers.dialogFlowSessionID + userID
+		);
 		let self = module.exports;
 		const request = {
 			session: sessionPath,
 			queryInput: {
 				text: {
 					text: text,
-					languageCode: config.dialogFlowSessionLanguageCode
+					languageCode: config.passengers.dialogFlowSessionLanguageCode
 				}
 			},
 			queryParams: {
@@ -50,7 +53,10 @@ module.exports = {
 		return responses;
 	},
 	eventQuery: async function(event, userID, parameters = {}) {
-		let sessionPath = sessionClient.sessionPath(config.googleProjectID, config.dialogFlowSessionID + userID);
+		let sessionPath = sessionClient.sessionPath(
+			config.passengers.googleProjectID,
+			config.passengers.dialogFlowSessionID + userID
+		);
 		let self = module.exports;
 		const request = {
 			session: sessionPath,
@@ -58,7 +64,7 @@ module.exports = {
 				event: {
 					name: event,
 					parameters: structJson.jsonToStructProto(parameters),
-					languageCode: config.dialogFlowSessionLanguageCode
+					languageCode: config.passengers.dialogFlowSessionLanguageCode
 				}
 			}
 		};
